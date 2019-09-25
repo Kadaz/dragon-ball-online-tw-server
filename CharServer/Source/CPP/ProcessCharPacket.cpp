@@ -602,8 +602,9 @@ int CharSocket::AddCharacters(sPC_SUMMARY data)
 	float ConByPoint = 81.6; // 1con = 85 old tw
 	DWORD LP = BasicLife + static_cast<DWORD>(LevelCon * ConByPoint);
 	// Quest List
-	sDB.executes("INSERT INTO questlist (`type`, `tId`, `currentID`, `nextID`, `charID`, `isCompleted`) VALUES ('%d', '%d', '%d', '%d', '%d', '%d');", 
+	sDB.executes("INSERT INTO questlist (`type`, `tId`, `currentID`, `nextID`, `charID`, `isCompleted`) VALUES ('%d', '%d', '%d', '%d', '%d', '%d');",
 		0, 0, 0, 0, charid, 0);
+
 	//EP Calculation
 	WORD BasicEnergy = newb->wBasic_EP + (newb->byLevel_Up_EP * 1);
 	WORD LevelEng = newb->byEng + static_cast<WORD>(newb->fLevel_Up_Eng * 1);
