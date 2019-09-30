@@ -27,6 +27,7 @@ Player::Player(WorldSession* session) : Object()
 	m_objectType = eOBJTYPE::OBJTYPE_PC;
 	cur_obj_tagert = NULL;
 	isMovingToCharServer = false;
+	isInPvpZone = false;
 	rpBallTimer = 0;
 }
 
@@ -118,6 +119,8 @@ void Player::SavePlayer()
 		sDB.SavePlayerPositionAndWorldID(GetVectorPosition(), GetVectorOriantation(), GetWorldID(), GetWorldTableID(), GetCharacterID());
 		sDB.SavePlayerLife(GetPcProfile()->dwCurLP, GetPcProfile()->wCurEP, GetCharacterID());
 		sDB.SaveTitleMarket( GetPcProfile()->sMarking.dwCode, GetCharacterID());
+		sDB.SavePlayerZenny(GetPcProfile()->dwZenny, GetCharacterID());
+		sDB.SavePlayerExp(GetPcProfile()->dwCurExp, GetCharacterID());
 		// do we need to save attributes as we load them at start ?
 	
 }
@@ -280,7 +283,7 @@ PORTALID Player::GetPortalIdFromList(HOBJECT handle)
 	return 255;
 }
 //----------------------------------------
-//	Crear jugador, estructura de datos y datos con base de datos.
+//	Create player, fill struct and data with database
 //----------------------------------------
 bool Player::Create(CHARACTERID id)
 {
@@ -310,14 +313,14 @@ bool Player::Create(CHARACTERID id)
 	return true;
 }
 //----------------------------------------
-//	Activar por Mapa Tick ()
+//	Trigger by Map Tick()
 //----------------------------------------
 void Player::Update(uint32 _update_diff, uint32 _time)
 {
 	if (!IsInWorld() && !GetIsDead())
 		return;
 
-	characterManager.UpdateAttributes(); //actualizar nuestros atributos todo tick
+	characterManager.UpdateAttributes(); // update our attributes all tick
 
 	m_position_tmp = m_position;
 	m_rotation_tmp = m_rotation;
@@ -344,14 +347,17 @@ void Player::Update(uint32 _update_diff, uint32 _time)
 	{
 	}
 
-	// ACTUALIZAR LA LISTA CAÍDA
+	// UPDATE DROPPED LIST
 	UpdateDropListTimer();
-	// ACTUALIZA TODO EL TEMPORIZADOR
+	// UPDATE ALL TIMER
 	rpBallTimer += _time;
+
+	// Check if player is in pvp zone
+	HandeFreePvpZone();
 }
 //----------------------------------------
 //	Trigger by Player Tick()
-//	Función que se usa para eliminar el objeto caído cada 30 segundos después de que se haya caído.
+//	Function use to remove the dropped item each 30 seconds after it has benn dropped
 //----------------------------------------
 void Player::UpdateDropListTimer()
 {
@@ -379,9 +385,9 @@ void Player::UpdateDropListTimer()
 	mutexDropList.unlock();
 }
 //----------------------------------------
-//	Activar cuando actualizamos nuestra cantidad de dinero.
-// cantidad de dinero para agregar (positivo) o negativo para eliminar
-//	tipo de transacción
+//	Trigger When we update our amount of money
+//	amount of money to add (positive) or negative to remove
+//	type of transaction
 //----------------------------------------
 void Player::UpdateZennyAmount(DWORD amount, eZENNY_CHANGE_TYPE zennyType)
 {
@@ -408,7 +414,7 @@ void Player::UpdateModusaAmount(DWORD amount)
 	SendPacket((char*)&Modusa, sizeof(sGU_UPDATE_CHAR_MUDOSA_POINT));
 }
 //----------------------------------------
-//	Compruebe si somos de baja vida o no
+//	Check if we are low life or not
 //----------------------------------------
 void Player::CalculeLowLife()
 {
@@ -597,7 +603,7 @@ void Player::Regen()
 		SendPacket((char*)&AP, sizeof(sGU_UPDATE_CHAR_AP));
 		SendToPlayerList((char*)&AP, sizeof(sGU_UPDATE_CHAR_AP));
 	}
-	CalculeRpBall();
+	//CalculeRpBall();
 }
 //Need Delet all that Shit and Remake it only handle one buff
 void Player::ExecuteLPFood()
@@ -611,6 +617,7 @@ void Player::ExecuteLPFood()
 			afect.wPacketSize = sizeof(sGU_EFFECT_AFFECTED) - 2;
 			afect.handle = GetHandle();
 			afect.hCaster = GetHandle();
+			//afect.effectTblidx = effect->effectTblidx = Item->tblidx;
 			afect.effectTblidx = GetAttributesManager()->sFoodInfo[i].FoodItemID;
 			afect.bysource = 1;
 			afect.SyestemEffectCode = GetAttributesManager()->sFoodInfo[i].TypeEffect;
@@ -715,7 +722,7 @@ void Player::ExecuteEPFood()
 				dropbuff.wPacketSize = sizeof(sGU_BUFF_DROPPED) - 2;
 				dropbuff.hHandle = GetHandle();
 				dropbuff.bySourceType = eDBO_OBJECT_SOURCE::DBO_OBJECT_SOURCE_SKILL;
-			//	dropbuff.unk = 1;
+				//dropbuff.unk = 1;
 				dropbuff.tblidx = GetAttributesManager()->sFoodInfo[i].FoodItemID;
 				dropbuff.unk1 = 0;
 				SendPacket((char*)&dropbuff, sizeof(sGU_BUFF_DROPPED));
@@ -879,6 +886,50 @@ void Player::HandleFreeBattleWinners()
 {
 
 }
+
+void Player::HandeFreePvpZone()
+{
+	if (m_position.x >= 5752.109863 && m_position.x <= 5791.600098 &&
+		m_position.z >= 748.119995 && m_position.z <= 787.700012) {
+		if (!isInPvpZone)
+		{
+			isInPvpZone = true;
+
+			// Send packet pvp zone entered
+			m_session->SendFreePVPZoneEntered();
+
+			/*sGU_WORLD_FREE_PVP_ZONE_ENTERED_NFY res;
+			res.wOpCode = GU_WORLD_FREE_PVP_ZONE_ENTERED_NFY;
+			res.handle = GetHandle();
+			res.wPacketSize = sizeof(sGU_WORLD_FREE_PVP_ZONE_ENTERED_NFY) - 2;
+					
+			sWorld.SendToAll((char*)&res, sizeof(sGU_WORLD_FREE_PVP_ZONE_ENTERED_NFY));*/
+			
+		//	sLog.outError("Player: x: %f, y: %f, z: %f", m_position.x, m_position.y, m_position.z);
+			
+		}
+					
+	}
+	else
+	{
+		if (isInPvpZone)
+		{
+			isInPvpZone = false;
+			// Send packet pvp zone left
+			m_session->SendFreePVPZoneLeft();
+			/*sGU_WORLD_FREE_PVP_ZONE_LEFT_NFY res;
+			res.wOpCode = GU_WORLD_FREE_PVP_ZONE_LEFT_NFY;
+			res.handle = GetHandle();
+			res.wPacketSize = sizeof(sGU_WORLD_FREE_PVP_ZONE_LEFT_NFY) - 2;
+
+			
+			sWorld.SendToAll((char*)&res, sizeof(sGU_WORLD_FREE_PVP_ZONE_LEFT_NFY));*/
+			//	sLog.outError("Player: x: %f, y: %f, z: %f", m_position.x, m_position.y, m_position.z);
+		}
+		
+	}
+}
+
 void Player::UpdateAspectState(BYTE State)
 {
 	sGU_UPDATE_CHAR_ASPECT_STATE CharAspect;
@@ -899,17 +950,17 @@ void Player::UpdateAspectState(BYTE State)
 //----------------------------------------
 void Player::CalculeRpBall()
 {
-	bool sendRpBall = false; //false
+	bool sendRpBall = true;
 
-	if (isfighting == false) //false
+	if (isfighting == false)
 	{
-		if (GetPcProfile()->wCurRP > 0 || GetAttributesManager()->GetNumFilledRpBall() > 1) //1=0
+		if (GetPcProfile()->wCurRP > 0 || GetAttributesManager()->GetNumFilledRpBall() > 0)
 		{
 			if (rpBallTimer >= CHAR_RP_BALL_UPDATE_INTERVAL)
 			{
 				int rpCur = GetPcProfile()->wCurRP;
 				rpCur -= 5;
-				if (rpCur <= 0 && GetAttributesManager()->GetNumFilledRpBall() > 1)//1=0
+				if (rpCur <= 0 && GetAttributesManager()->GetNumFilledRpBall() > 0)
 				{
 					GetAttributesManager()->SetNumFilledRpBall(-1);
 					GetPcProfile()->wCurRP = GetPcProfile()->avatarAttribute.wBaseMaxRP;
@@ -948,7 +999,7 @@ void Player::CalculeRpBall()
 				SendToPlayerList((char*)&newBall, sizeof(sGU_UPDATE_CHAR_RP_BALL));
 			}
 			sendRpBall = true;
-			rpBallTimer = 1; //0
+			rpBallTimer = 0;
 		}
 	}
 	if (sendRpBall == true)
@@ -1177,8 +1228,8 @@ void Player::RemoveDropFromList(HOBJECT handle)
 	mutexDropList.unlock();
 }
 //----------------------------------------
-//	Obtener los datos del objeto caído
-// Requieren el mango caído
+//	Get the data from object dropped
+//	Requiert the dropped handle
 //----------------------------------------
 DroppedObject *Player::GetPickupData(HOBJECT handle)
 {
@@ -1223,8 +1274,8 @@ void Player::Attack()
 	*/
 }
 //----------------------------------------
-// Necesito cambiar esa mierda y rehacer
-// Tomar un poco de daño (necesidad de herencia que)
+//Need Change That Shit and Remake
+//	Take some damage (need to inheritance that)
 //----------------------------------------
 void	Player::TakeDamage(uint32 amount)
 {
@@ -1350,9 +1401,9 @@ void Player::TakeMobDemage(uint32 amount)
 	
 }
 //----------------------------------------
-// Consigue zeny que está en el banco
-// Actualmente devolviendo un valor estático
-// Necesidad de obtener de la base de datos
+//	Get zeny that is in the bank
+//  Currently returning a static value
+//  Need to get from the Database 
 //----------------------------------------
 
 DWORD Player::GetBankMoney()
@@ -1395,14 +1446,6 @@ void	Player::RewardExpFromMob(MonsterData& data)
 		SendPacket((char*)&expPacket, sizeof(sGU_UPDATE_CHAR_EXP));
 	}
 }
-//void Player::RewardDropFromMob(MonsterData& data)
-//{
-//	EachDropTable *each;
-//	sITEM_DATA *itemSrc = NULL;
-//
-//	
-//
-//}
 void Player::RewardDropFromMob(MonsterData& data)
 {
 	DroppedObject *dropped;
@@ -1410,46 +1453,50 @@ void Player::RewardDropFromMob(MonsterData& data)
 	/* /!\ NEED FUNCTION TO CREATE CORRECT DROP	/!\	*/
 	/* ITEM	*/
 	
-		
-		dropped = new DroppedObject;
-		dropped->droppedTime = GetTickCount();
-		dropped->objType = OBJTYPE_DROPITEM;
-		dropped->owner = GetHandle();
+	int DropAmount = rand() % 5;
+	for (int i = 0; i <= DropAmount; i++)
+	{
+	dropped = new DroppedObject;
+	dropped->droppedTime = GetTickCount();
+	dropped->objType = OBJTYPE_DROPITEM;
+	dropped->owner = GetHandle();
 
-		dropped->item.wPacketSize = sizeof(Drop) - 2;
-		dropped->item.wOpCode = GU_OBJECT_CREATE;
+	dropped->item.wPacketSize = sizeof(Drop) - 2;
+	dropped->item.wOpCode = GU_OBJECT_CREATE;
 
-		dropped->item.Handle = sWorld.AcquireItemSerialId();
-		dropped->item.Tblidx = rand()% 10 + 1;
-		dropped->item.Tblidx = rand() % 101 + 1;
-		itemSrc = (sITEM_TBLDAT*)sTBM.GetItemTable()->FindData(dropped->item.Tblidx);
+	dropped->item.Handle = sWorld.AcquireItemSerialId();
+	if (rand() % 5 >= 4)
+	dropped->item.Tblidx = 11170019 + rand() % 261 + 1;
+	else
+	dropped->item.Tblidx = 11170019 + rand() % 261 + 1;
+	itemSrc = (sITEM_TBLDAT*)sTBM.GetItemTable()->FindData(dropped->item.Tblidx);
 
+	if (itemSrc == NULL)
+	{
+		itemSrc = (sCASHITEM_TBLDAT*)sTBM.GetCashItemTable()->FindData(dropped->item.Tblidx);
 		if (itemSrc == NULL)
 		{
-			itemSrc = (sCASHITEM_TBLDAT*)sTBM.GetCashItemTable()->FindData(dropped->item.Tblidx);
-			if (itemSrc == NULL)
-			{
-				return;
-			}
+			return;
 		}
-		if (itemSrc != NULL)
-		{
-			dropped->item.Type = OBJTYPE_DROPITEM;
-			dropped->item.Grade = 0;
-			dropped->item.Rank = itemSrc->eRank;
-			dropped->item.BattleAttribute = 0;
-			dropped->item.Loc.x = data.curPos.x + rand() % 6;
-			dropped->item.Loc.y = data.curPos.y;
-			dropped->item.Loc.z = data.curPos.z +rand() % 6;
-			dropped->item.IsNew = true;
-			dropped->item.NeedToIdentify = false;
+	}
+	if (itemSrc != NULL)
+	
+	
+		dropped->item.Type = OBJTYPE_DROPITEM;
+		dropped->item.Grade = 0;
+		dropped->item.Rank = itemSrc->eRank;
+		dropped->item.BattleAttribute = 0;
+		dropped->item.Loc.x = data.curPos.x + rand() % 6;
+		dropped->item.Loc.y = data.curPos.y;
+		dropped->item.Loc.z = data.curPos.z + rand() % 6;
+		dropped->item.IsNew = true;
+		dropped->item.NeedToIdentify = false;
+
+
 
 			/* Add Drop to list	*/
 			SendPacket((char*)&dropped->item, sizeof(Drop));
 			AddDropToList(*dropped, dropped->item.Handle);
-			AddDropToList(*dropped, dropped->item.Handle);
-		
-			
 		}
 	
 	/*	ZENNY	*/
@@ -1471,8 +1518,8 @@ void Player::RewardDropFromMob(MonsterData& data)
 	dropped->zenny.Loc.y = data.curPos.y;
 	dropped->zenny.Loc.z = data.curPos.z + rand() % 6;
 	dropped->zenny.Dir.x = data.Spawn_Dir.x;
-	dropped->zenny.Dir.y = data.Spawn_Dir.y;
-	dropped->zenny.Dir.z = data.Spawn_Dir.z;
+	//dropped->zenny.Dir.y = data.Spawn_Dir.y;
+	//dropped->zenny.Dir.z = data.Spawn_Dir.z;
 
 	dropped->zenny.Handle = sWorld.AcquireItemSerialId();
 	dropped->zenny.IsNew = false;
@@ -1539,7 +1586,7 @@ void	Player::LevelUpByComand(int Level)
 	SendToPlayerList((char*)&levelPacket, sizeof(sGU_UPDATE_CHAR_LEVEL));
 	// calculate our new state
 	//characterManager.LevelUp();
-	characterManager.SendRpBallInformation();
+	//characterManager.SendRpBallInformation();
 	// fill lp ep to max and calculate RP -
 	GetPcProfile()->dwCurLP = GetPcProfile()->avatarAttribute.wBaseMaxLP;
 	GetPcProfile()->wCurEP = GetPcProfile()->avatarAttribute.wBaseMaxEP;
