@@ -27,6 +27,7 @@ Player::Player(WorldSession* session) : Object()
 	m_objectType = eOBJTYPE::OBJTYPE_PC;
 	cur_obj_tagert = NULL;
 	isMovingToCharServer = false;
+	isInPvpZone = false;
 	rpBallTimer = 0;
 }
 
@@ -118,6 +119,7 @@ void Player::SavePlayer()
 		sDB.SavePlayerPositionAndWorldID(GetVectorPosition(), GetVectorOriantation(), GetWorldID(), GetWorldTableID(), GetCharacterID());
 		sDB.SavePlayerLife(GetPcProfile()->dwCurLP, GetPcProfile()->wCurEP, GetCharacterID());
 		sDB.SaveTitleMarket( GetPcProfile()->sMarking.dwCode, GetCharacterID());
+		sDB.SavePlayerZenny(GetPcProfile()->dwZenny, GetCharacterID());
 		// do we need to save attributes as we load them at start ?
 	
 }
@@ -348,6 +350,9 @@ void Player::Update(uint32 _update_diff, uint32 _time)
 	UpdateDropListTimer();
 	// UPDATE ALL TIMER
 	rpBallTimer += _time;
+
+	// Check if player is in pvp zone
+	HandeFreePvpZone();
 }
 //----------------------------------------
 //	Trigger by Player Tick()
@@ -880,6 +885,50 @@ void Player::HandleFreeBattleWinners()
 {
 
 }
+
+void Player::HandeFreePvpZone()
+{
+	if (m_position.x >= 5752.109863 && m_position.x <= 5791.600098 &&
+		m_position.z >= 748.119995 && m_position.z <= 787.700012) {
+		if (!isInPvpZone)
+		{
+			isInPvpZone = true;
+
+			// Send packet pvp zone entered
+			m_session->SendFreePVPZoneEntered();
+
+			/*sGU_WORLD_FREE_PVP_ZONE_ENTERED_NFY res;
+			res.wOpCode = GU_WORLD_FREE_PVP_ZONE_ENTERED_NFY;
+			res.handle = GetHandle();
+			res.wPacketSize = sizeof(sGU_WORLD_FREE_PVP_ZONE_ENTERED_NFY) - 2;
+					
+			sWorld.SendToAll((char*)&res, sizeof(sGU_WORLD_FREE_PVP_ZONE_ENTERED_NFY));*/
+			
+		//	sLog.outError("Player: x: %f, y: %f, z: %f", m_position.x, m_position.y, m_position.z);
+			
+		}
+					
+	}
+	else
+	{
+		if (isInPvpZone)
+		{
+			isInPvpZone = false;
+			// Send packet pvp zone left
+			m_session->SendFreePVPZoneLeft();
+			/*sGU_WORLD_FREE_PVP_ZONE_LEFT_NFY res;
+			res.wOpCode = GU_WORLD_FREE_PVP_ZONE_LEFT_NFY;
+			res.handle = GetHandle();
+			res.wPacketSize = sizeof(sGU_WORLD_FREE_PVP_ZONE_LEFT_NFY) - 2;
+
+			
+			sWorld.SendToAll((char*)&res, sizeof(sGU_WORLD_FREE_PVP_ZONE_LEFT_NFY));*/
+			//	sLog.outError("Player: x: %f, y: %f, z: %f", m_position.x, m_position.y, m_position.z);
+		}
+		
+	}
+}
+
 void Player::UpdateAspectState(BYTE State)
 {
 	sGU_UPDATE_CHAR_ASPECT_STATE CharAspect;
