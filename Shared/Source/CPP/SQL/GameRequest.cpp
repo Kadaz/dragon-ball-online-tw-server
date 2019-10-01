@@ -148,6 +148,12 @@ void MySQLConnWrapper::AddMail(CHARACTERID CharID, int byDay, int byMailType, in
 	if (result != NULL)
 		delete result;
 }
+void MySQLConnWrapper::DelMail(MAILID mailID)
+{
+	sql::ResultSet* result = sDB.executes("DELETE FROM `mail` WHERE `id` = '%d';", mailID);
+	if (result != NULL)
+		delete result;
+}
 void MySQLConnWrapper::AddTitle(CHARACTERID characterID, TBLIDX TitleID)
 {
 	sql::ResultSet* result = sDB.executes("INSERT INTO titlelist (`CharacterID`,  `TitleID`) VALUES('%d','%d');",
@@ -166,6 +172,13 @@ void MySQLConnWrapper::SaveQuickTeleport(CHARACTERID characterID, BYTE TeleportI
 void MySQLConnWrapper::SavePlayerZenny(int zenny, CHARACTERID charid)
 {
 	sql::ResultSet * result = sDB.executes("UPDATE characters SET ZennyInventory = %d WHERE CharacterID = %d", zenny, charid);
+
+	if (result != NULL)
+		delete result;
+}
+void MySQLConnWrapper::SavePlayerExp(int exp, CHARACTERID charid)
+{
+	sql::ResultSet * result = sDB.executes("UPDATE characters SET CurrentExp = %d WHERE CharacterID = %d", exp, charid);
 
 	if (result != NULL)
 		delete result;
