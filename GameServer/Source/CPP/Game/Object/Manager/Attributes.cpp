@@ -130,7 +130,7 @@ bool AttributesManager::LoadAttributes(CHARACTERID _id, Player* _plr)
 	//Other Infos
 	PlayerProfile.dwCurExp = result->getInt("CurrentExp");
 	PlayerProfile.dwZenny = result->getInt("ZennyInventory");
-	PlayerProfile.dwTutorialHint = -1; // help frame
+	PlayerProfile.dwTutorialHint = 1; // help frame
 	PlayerProfile.byBindType = DBO_BIND_TYPE_INITIAL_LOCATION;
 	//PlayerProfile.bindObjectTblidx = -1;
 
