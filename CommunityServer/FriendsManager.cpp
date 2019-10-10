@@ -24,10 +24,20 @@ void CommunitySession::SendFriendAdd(Packet packet)
 	res.wOpCode = TU_FRIEND_ADD_RES;
 	wcscpy_s(res.wchName, MAX_SIZE_CHAR_NAME_UNICODE + 1, req->wchName);
 	res.wResultCode = CHAT_SUCCESS;
-	res.targetID = (int)req->wchName[0] + (int)req->wchName[1];
+
+	char charName[17];
+	sDB.wcharToChar(req->wchName, charName, 34);
+
+	std::string charNameStr(charName);
+
+	unsigned int friendId = sDB.GetFriendIdByName(charNameStr);
+
+	res.targetID = friendId;
+
+	sDB.AddFriendToList(_player->GetCharacterID(), friendId);
 
 	SendPacket((char*)&res, sizeof sTU_FRIEND_ADD_RES);
-	}
+}
 
 void CommunitySession::SendFriendDelete(Packet packet)
 {
@@ -49,7 +59,7 @@ void CommunitySession::SendFriendMove(Packet packet)
 	sUT_FRIEND_MOVE_REQ * req = (sUT_FRIEND_MOVE_REQ*)packet.GetPacketBuffer();
 
 	sTU_FRIEND_MOVE_RES res;
-
+	
 	res.wPacketSize = (sizeof sTU_FRIEND_MOVE_RES) - 2;
 	res.wOpCode = TU_FRIEND_MOVE_RES;
 	res.wResultCode = CHAT_SUCCESS;
@@ -87,4 +97,25 @@ void CommunitySession::SendFriendBlackDelete(Packet packet)
 	res.targetID = (int)req->awchName[0] + (int)req->awchName[1];
 
 	SendPacket((char*)&res, sizeof sTU_FRIEND_BLACK_DEL_RES);
+}
+
+void CommunitySession::SendFriendListInfomation()
+{
+	sTU_FRIEND_LIST_INFO res;
+
+	res.byCount = 20;
+	res.wPacketSize = 3 + ((sizeof sFRIEND_FULL_INFO) * res.byCount);
+	res.wOpCode = TU_FRIEND_LIST_INFO;
+
+	for (int i = 0; i < res.byCount; i++)
+	{
+		res.asInfo[i].bIsBlack = false;
+		res.asInfo[i].charID = i * 1000;
+
+		std::string charName = "DefaultFriend";
+		mbstowcs(res.asInfo[i].wchName, charName.c_str(), 34);
 	}
+
+	SendPacket((char*)&res, 5 + ((sizeof sFRIEND_FULL_INFO) * res.byCount));
+
+}
