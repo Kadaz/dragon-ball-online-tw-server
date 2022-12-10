@@ -1,0 +1,176 @@
+/*****************************************************************************
+ * bookmarks.hsl - Hex Workshop Bookmark structure definitions
+ *
+ * Copyright (c) 2008 BreakPoint Software, Inc.  All Rights Reserved.
+ *
+ *****************************************************************************
+ *
+ * The Hex Workshop Bookmark format is fairly simple.  It starts with a 
+ * fixed-length header (struct tagHEADER) and is followed by fixed length
+ * bookmark entries (struct tagENTRY).  Please see the structure definitions
+ * below for details.
+ *
+ */
+
+#include "standard-types.hsl"
+
+struct sMOB_TBLDAT
+{
+DWORD tblidx;
+
+int				dwBasic_LP;
+	WORD			wBasic_EP;
+	WORD			wBasic_Physical_Defence;
+	WORD			wBasic_Energy_Defence;
+
+	WORD			wBasicStr;
+	WORD			wBasicCon;
+	WORD			wBasicFoc;
+	WORD			wBasicDex;
+	WORD			wBasicSol;
+	WORD			wBasicEng;
+BYTE fill[2];
+	float			fScale;
+	WORD			wAttack_Speed_Rate; // ¸Ç¼Õ °ø°Ý½ÃÀÇ ¾Ö´Ï¸ÞÀÌ¼Ç ¼Óµµ¿¡ ´ëÇÑ %
+	BYTE			byAttack_Type;
+BYTE fill[1];
+	float			fAttack_Range;
+	WORD			wAttack_Rate;
+	WORD			wDodge_Rate;
+	WORD			wBlock_Rate;
+	WORD			wCurse_Success_Rate;
+	WORD			wCurse_Tolerance_Rate;
+BYTE fill[2];
+	float			fRadius;
+	WORD			wBasic_Aggro_Point;
+BYTE fill[2];
+bool			bValidity_Able;
+BYTE fill[3];
+	DWORD			Name;
+	WCHAR			wszNameText[ 40 + 1 ];
+	char			szModel[ 32 + 1 ];
+	BYTE			byLevel;
+	BYTE			byGrade;
+BYTE fill[3];
+	DWORD			dwAi_Bit_Flag;
+
+	WORD			wLP_Regeneration;
+	WORD			wEP_Regeneration;
+	BYTE			byAttack_Animation_Quantity;
+	BYTE			byBattle_Attribute;
+
+	WORD			wBasic_Physical_Offence;
+	WORD			wBasic_Energy_Offence;
+BYTE fill[2];
+	float			fWalk_Speed_Origin;
+	float			fWalk_Speed;
+	float			fRun_Speed_Origin;
+	float			fRun_Speed;
+	float			fRadius_X;
+	float			fRadius_Z;
+
+	WORD			wSight_Range;
+	WORD			wScan_Range;
+
+	WORD			wUse_Skill_Time[7];
+BYTE fill[2];
+	DWORD			use_Skill_Tblidx[7];
+	BYTE			byUse_Skill_Basis[7];
+BYTE fill[1];
+	WORD			wUse_Skill_LP[7];
+
+	BYTE			byVisible_Sight_Range;
+
+	char			szCamera_Bone_Name[ 32 + 1 ];
+
+	WORD			wAttackCoolTime;
+BYTE fill[2]; 
+	float			fFly_Height;
+
+	char			szNameText[ 40 + 1 ];
+
+	bool			bSpawn_Animation;
+BYTE fill[2];
+	DWORD			dwDialogGroup;
+	char			szILLust[ 32 + 1 ];
+BYTE fill[3];
+	DWORD			dwAllianceIdx; 
+	WORD			wAggroMaxCount;
+BYTE fill[2];
+	DWORD			dwNpcAttributeFlag;
+	WORD			wStomachacheDefence;
+	WORD			wPoisonDefence;
+	WORD			wBleedDefence;
+	WORD			wBurnDefence;
+
+DWORD			dwMobGroup;		
+	WORD			wMob_Kind;
+BYTE fill[2];
+	DWORD			dwDrop_Zenny;
+	float			fDrop_Zenny_Rate;
+	DWORD			dwExp; 
+	BYTE			byMob_Type;
+BYTE fill[3];
+	DWORD			drop_Item_Tblidx;  // this is wrong.. 7x CD
+
+	bool			bSize;
+BYTE fill[1];
+	WORD			wTMQPoint;
+	
+	DWORD			dropQuestTblidx;
+
+	DWORD			idxBigBag1;
+	BYTE			byDropRate1;
+	BYTE			byTryCount1;
+BYTE fill[2];
+	DWORD			idxBigBag2;
+	BYTE			byDropRate2;
+	BYTE			byTryCount2;
+BYTE fill[2];
+	DWORD			idxBigBag3;
+	BYTE			byDropRate3;
+	BYTE			byTryCount3;
+BYTE fill[2];
+
+	DWORD			dwUnknown;
+	BYTE			byUnknown;
+	BYTE			byUnknown2;
+	bool			bShow_Name; 
+
+BYTE fill[1];
+	/*
+	bool			bShow_Name; 
+
+	DWORD			dwUnknown; 
+	BYTE			byProperty; 
+
+	BYTE			byKnockDownBlockRate; 
+	BYTE			byHtbBlockRate; 
+	*/
+
+	WORD			wSightAngle; 
+BYTE fill[2];
+	DWORD			dwImmunity_Bit_Flag; 
+
+	bool			bIsDragonBallDrop;
+BYTE fill[1];
+	WORD			wMonsterClass; 
+	WORD			wUseRace; 
+BYTE fill[2];
+	float			fRewardExpRate;
+	float			fRewardZennyRate; 
+
+	DWORD			dwFormulaOffset; 
+
+	float			fSettingRate_LP;
+	float			fSettingRate_LPRegen; 
+	float			fSettingRate_PhyOffence; 
+	float			fSettingRate_EngOffence; 
+	float			fSettingRate_PhyDefence;
+	float			fSettingRate_EngDefence; 
+	float			fSettingRate_AttackRate; 
+	float			fSettingRate_DodgeRate; 
+	float			fSettingPhyOffenceRate; 
+	float			fSettingEngOffenceRate; 
+	float			fSettingRate_Defence_Role; 
+};
