@@ -4,7 +4,7 @@ Dragon Ball Online Server
 ## Prerequisites
 
 In order to compile the emulator you need to download and unzip these files in the project folder:
-https://mega.nz/#!Ux9zWKaR!PvX7xkzdFpGCSHITBwtxJyZyKEidvxC0dLkPEnIWB_g
+https://www.mediafire.com/file/zf2n012sm6a5cr8/boost_1_55_0.zip/file
 
 The project must be compiled in Release x64 mode
 
