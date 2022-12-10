@@ -1,0 +1,576 @@
+/*****************************************************************************
+ * bookmarks.hsl - Hex Workshop Bookmark structure definitions
+ *
+ * Copyright (c) 2008 BreakPoint Software, Inc.  All Rights Reserved.
+ *
+ *****************************************************************************
+ *
+ * The Hex Workshop Bookmark format is fairly simple.  It starts with a 
+ * fixed-length header (struct tagHEADER) and is followed by fixed length
+ * bookmark entries (struct tagENTRY).  Please see the structure definitions
+ * below for details.
+ *
+ */
+
+#include "standard-types.hsl"
+struct sVECTOR3
+{
+	float x;
+	float y;
+	float z;
+}sVECTOR3;
+
+struct dVECTOR3
+{
+	int	x;
+	int	y;
+	int	z;
+}dVECTOR3;
+
+struct sSUMMARY_PRIVATESHOP_SHOP_DATA
+{
+	bool bIsOwnerEmpty; //true�̸� ������ �ڸ��� ����
+	BYTE byShopState; //Shop State ����(ePRIVATESHOP_STATE)
+	WCHAR wcPrivateShopName[32 + 1];
+}sSUMMARY_PRIVATESHOP_SHOP_DATA;// end of struct sSUMMARY_PRIVATESHOP_SHOP_DATA
+
+struct sDBO_SYSTEM_EFFECT_RESULT
+{
+	DWORD	eResultType;
+	float	 Value1;
+	float	 Value2;
+	float	 Value3;
+	float	 Value4;
+	float	 Value5;
+	float	 Value6;	
+}sDBO_SYSTEM_EFFECT_RESULT;
+
+struct sSKILL_RESULT
+{
+	unsigned int			hTarget;
+	BYTE			byAttackResult;		// eBATTLE_ATTACK_RESULT
+	sDBO_SYSTEM_EFFECT_RESULT		effectResult[2];
+	BYTE							byBlockedAction;		// eDBO_GUARD_TYPE
+	DWORD	 unk1;
+	sVECTOR3		vShift;
+	sVECTOR3		vShift1;
+}sSKILL_RESULT;
+
+struct sHTBSKILL_RESULT
+{
+	BYTE			byStep; // 현재 HTB 스텝
+	sSKILL_RESULT	sSkillResult;
+}sHTBSKILL_RESULT;
+
+struct sCHARSTATE_SPAWNING
+{
+	BYTE								unk;		//TODO: what is that value?
+	BYTE								byTeleportType;		// eTELEPORT_TYPE	
+}sCHARSTATE_SPAWNING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_DESPAWNING
+{
+	BYTE								unk;		//TODO: what is that value?
+	BYTE								byTeleportType;		// eTELEPORT_TYPE	
+}sCHARSTATE_DESPAWNING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_STANDING
+{
+}sCHARSTATE_STANDING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_SITTING
+{
+}sCHARSTATE_SITTING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_FAINTING
+{
+	BYTE			byReason; // eFAINT_REASON
+}sCHARSTATE_FAINTING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_CAMPING
+{
+}sCHARSTATE_CAMPING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_LEAVING
+{
+	BYTE			byLeavingType;	// eCHARLEAVING_TYPE
+}sCHARSTATE_LEAVING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_MOVING
+{
+	DWORD			dwTimeStamp;
+	BYTE			byMoveFlag;
+	BYTE			byMoveDirection;
+}sCHARSTATE_MOVING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_DESTMOVE
+{
+	DWORD		    dwTimeStamp;
+	BYTE            byMoveFlag;
+	bool            bHaveSecondDestLoc;
+	dVECTOR3	    vSecondDestLoc;
+	BYTE			unknown;
+	BYTE            byDestLocCount;
+	dVECTOR3		avDestLoc[10];
+}sCHARSTATE_DESTMOVE;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_FOLLOWING
+{
+	DWORD			dwTimeStamp;
+	BYTE			byMoveFlag;
+	unsigned int			hTarget; // 타겟 따라가기일때 따라갈 타겟 핸들
+	float			fDistance; // 타겟 앞에서 멈출 거리
+	BYTE			byMovementReason; // 공격 or 스킬사용 등의 FOLLOW의 이유를 설정
+}sCHARSTATE_FOLLOWING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_FALLING
+{
+	DWORD			dwTimeStamp;
+	BYTE			byMoveDirection;		// ENtlMovementDirection
+}sCHARSTATE_FALLING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_DASH_PASSIVE
+{
+	BYTE			byMoveDirection;		// MOVE_DASH_F, MOVE_DASH_B and so on
+	sVECTOR3		vDestLoc;
+}sCHARSTATE_DASH_PASSIVE;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_TELEPORTING
+{
+	BYTE								byTeleportType;		// eTELEPORT_TYPE
+}sCHARSTATE_TELEPORTING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_SLIDING
+{
+	sVECTOR3		vShift;
+}sCHARSTATE_SLIDING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_KNOCKDOWN
+{
+	sVECTOR3		vShift;
+}sCHARSTATE_KNOCKDOWN;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_FOCUSING
+{
+}sCHARSTATE_FOCUSING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_CASTING
+{
+	unsigned int			skillId;
+	unsigned int			hTarget;
+	DWORD			dwCastingTime;
+	DWORD			dwCastingTimeRemaining;
+}sCHARSTATE_CASTING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_SKILL_AFFECTING
+{
+	unsigned int			skillId;
+	unsigned int			hTarget;
+}sCHARSTATE_SKILL_AFFECTING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_KEEPING_EFFECT
+{
+}sCHARSTATE_KEEPING_EFFECT;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_CASTING_ITEM
+{
+	unsigned int			itemTblidx;
+	unsigned int			hTarget;
+	DWORD			dwCastingTime;
+	DWORD			dwCastingTimeRemaining;
+}sCHARSTATE_CASTING_ITEM;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_STUNNED
+{
+	BYTE			byStunType;		// eDBO_STUN_TYPE
+}sCHARSTATE_STUNNED;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_SLEEPING
+{
+}sCHARSTATE_SLEEPING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_PARALYZED
+{
+}sCHARSTATE_PARALYZED;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_HTB
+{
+	unsigned int				HTBId;			// HTB 스킬 ID
+	unsigned int				hTarget;		// HTB 타겟 핸들
+	BYTE				byStepCount;	// HTB 스텝 개수
+	BYTE				byCurStep;		// 현재 스텝
+	BYTE				byResultCount;	// HTB 스킬 결과 개수
+	sHTBSKILL_RESULT	aHTBSkillResult[10]; // HTB 스킬 결과
+}sCHARSTATE_HTB;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_SANDBAG
+{
+	
+}sCHARSTATE_SANDBAG;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_CHARGING
+{
+}sCHARSTATE_CHARGING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_BLOCKING
+{
+}sCHARSTATE_BLOCKING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_PRIVATESHOP
+{
+	sSUMMARY_PRIVATESHOP_SHOP_DATA		sSummaryPrivateShopData;
+}sCHARSTATE_PRIVATESHOP;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_DIRECT_PLAY
+{
+	BYTE				byDirectPlayType; // 연출 타입 ( eDIRECT_PLAY_TYPE )
+	unsigned int				directTblidx; // 연출 TBLIDX
+}sCHARSTATE_DIRECT_PLAY;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_OPERATING
+{
+	unsigned int				hTargetObject; // 타겟 오브젝트 핸들
+	DWORD				dwOperateTime; // 동작 시간
+	unsigned int				directTblidx; // 연출 TBLIDX
+}sCHARSTATE_OPERATING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_RIDEON
+{
+	unsigned int				hTarget; // 타겟 핸들
+}sCHARSTATE_RIDEON;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_TURNING
+{
+	unsigned int				directTblidx; // 연출 TBLIDX
+	sVECTOR3			vDestDir;
+}sCHARSTATE_TURNING;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_AIR_JUMP
+{
+	DWORD			dwTimeStamp;
+	BYTE			byMoveFlag;
+	BYTE			byMoveDirection;
+}sCHARSTATE_AIR_JUMP;
+//-----------------------------------------------------------------------------------
+struct sCHARSTATE_AIR_DASH_ACCEL
+{
+	BYTE			byMoveDirection;		// MOVE_DASH_F, MOVE_DASH_B and so on	
+}sCHARSTATE_AIR_DASH_ACCEL;
+
+union sCHARSTATE_DETAIL
+{
+	sCHARSTATE_SPAWNING				sCharStateSpawning;
+	sCHARSTATE_DESPAWNING			sCharStateDespawning;
+	sCHARSTATE_STANDING				sCharStateStanding;
+	sCHARSTATE_SITTING				sCharStateSitting;
+	sCHARSTATE_FAINTING				sCharStateFainting;
+	sCHARSTATE_CAMPING				sCharStateCamping;
+	sCHARSTATE_LEAVING				sCharStateLeaving;
+
+	sCHARSTATE_MOVING				sCharStateMoving;
+	sCHARSTATE_DESTMOVE				sCharStateDestMove;
+	sCHARSTATE_FOLLOWING			sCharStateFollwing;
+	sCHARSTATE_FALLING				sCharStateFalling;
+	sCHARSTATE_DASH_PASSIVE			sCharStateDashPassive;
+	sCHARSTATE_TELEPORTING			sCharStateTeleporting;
+	sCHARSTATE_SLIDING				sCharStateSliding;
+	sCHARSTATE_KNOCKDOWN			sCharStateKnockdown;
+
+	sCHARSTATE_FOCUSING				sCharStateFocusing;
+	sCHARSTATE_CASTING				sCharStateCasting;
+	sCHARSTATE_SKILL_AFFECTING		sCharStateSkillAffecting;
+	sCHARSTATE_KEEPING_EFFECT		sCharStateKeepingEffect;
+	sCHARSTATE_CASTING_ITEM			sCharStateCastingItem;
+
+	sCHARSTATE_STUNNED				sCharStateStunned;
+	sCHARSTATE_SLEEPING				sCharStateSleeping;
+	sCHARSTATE_PARALYZED			sCharStateParalyzed;
+
+	sCHARSTATE_HTB					sCharStateHTB;
+	sCHARSTATE_SANDBAG				sCharStateSandBag;
+	sCHARSTATE_CHARGING				sCharStateCharging;
+
+	sCHARSTATE_PRIVATESHOP			sCharStatePrivateShop;//  [7/16/2007]
+	sCHARSTATE_DIRECT_PLAY			sCharStateDirectPlay;
+	sCHARSTATE_OPERATING			sCharStateOperating;
+	sCHARSTATE_RIDEON				sCharStateRideOn;
+	sCHARSTATE_TURNING				sCharStateTurning;
+	sCHARSTATE_AIR_JUMP				sCharStateAirJump;
+	sCHARSTATE_AIR_DASH_ACCEL		sCharStateAirDashAccel;
+
+}sCHARSTATE_DETAIL;
+
+struct sASPECTSTATE_SUPER_SAIYAN
+{
+	BYTE				bySourceGrade;
+}sASPECTSTATE_SUPER_SAIYAN;
+//-----------------------------------------------------------------------------------
+struct sASPECTSTATE_PURE_MAJIN
+{
+	BYTE				bySourceGrade;
+}sASPECTSTATE_PURE_MAJIN;
+//-----------------------------------------------------------------------------------
+struct sASPECTSTATE_GREAT_NAMEK
+{
+	BYTE				bySourceGrade;
+}sASPECTSTATE_GREAT_NAMEK;
+//-----------------------------------------------------------------------------------
+struct sASPECTSTATE_KAIOKEN
+{
+	BYTE				bySourceGrade;
+	BYTE				byRepeatingCount;
+}sASPECTSTATE_KAIOKEN;
+//-----------------------------------------------------------------------------------
+struct sASPECTSTATE_SPINNING_ATTACK
+{
+}sASPECTSTATE_SPINNING_ATTACK;
+//-----------------------------------------------------------------------------------
+struct sASPECTSTATE_VEHICLE
+{	
+	unsigned int		idVehicleTblidx;
+	unsigned int		hVehicleItem;
+	bool		bIsEngineOn;
+}sASPECTSTATE_VEHICLE;
+
+union sASPECTSTATE_DETAIL
+{
+	sASPECTSTATE_SUPER_SAIYAN		sSuperSaiyan;
+	sASPECTSTATE_PURE_MAJIN			sPureMajin;
+	sASPECTSTATE_GREAT_NAMEK		sGreatNamek;
+	sASPECTSTATE_KAIOKEN			sKaioken;
+	sASPECTSTATE_SPINNING_ATTACK	sSpinningAttack;
+	sASPECTSTATE_VEHICLE			sVehicle;
+	//BYTE							unknown[9];
+}sASPECTSTATE_DETAIL;
+
+struct sASPECTSTATE_BASE
+{
+	BYTE							byAspectStateId;
+}sASPECTSTATE_BASE;
+
+struct sASPECTSTATE
+{
+	sASPECTSTATE_BASE				sAspectStateBase;
+	sASPECTSTATE_DETAIL				sAspectStateDetail;
+}sASPECTSTATE;
+
+struct sCHARSTATE_BASE
+{
+	BYTE			byStateID;
+	DWORD			dwStateTime;
+	unsigned __int64		dwConditionFlag;
+	sASPECTSTATE	aspectState;
+	bool			isFighting;
+
+	sVECTOR3		vCurLoc;
+	sVECTOR3		vCurDir;
+	bool			isFlying;
+}sCHARSTATE_BASE;
+
+struct sCHARSTATE
+{
+	sCHARSTATE_BASE				sCharStateBase;
+	sCHARSTATE_DETAIL			sCharStateDetail;
+}sCHARSTATE;
+
+struct sITEM_BRIEF
+{
+	DWORD			tblidx; // item table index
+	BYTE            byGrade; // item effect
+	BYTE			byRank;
+	BYTE			byBattleAttribute;
+}sITEM_BRIEF;
+
+struct sPC_SHAPE
+{
+	BYTE			byFace;
+	BYTE			byHair;
+	BYTE			byHairColor;
+	BYTE			bySkinColor;
+}sPC_SHAPE;
+
+struct sDBO_GUILD_MARK
+{
+	BYTE					byMarkMain;
+	BYTE					byMarkMainColor;
+	BYTE					byMarkInLine;
+	BYTE					byMarkInColor;
+	BYTE					byMarkOutLine;
+	BYTE					byMarkOutColor;
+	
+}sDBO_GUILD_MARK;
+
+struct sDBO_DOGI_DATA
+{
+	DWORD         guildId;
+	BYTE			byType;			// Lodging type
+	BYTE		    byGuildColor;	// Guild Uniform Color
+	BYTE			byDojoColor;	// Uniform coating color
+
+}sDBO_DOGI_DATA;
+
+struct sPC_BRIEF
+{
+	DWORD		charId;
+	DWORD			tblidx; // pc Å×ÀÌºí ÀÎµ¦½º
+	bool			bIsAdult;
+	WCHAR			awchName[16 + 1];
+	WCHAR			wszGuildName[16 + 1];
+
+	sPC_SHAPE		sPcShape; // pc ¿Ü¾ç ( ¾ó±¼/¸Ó¸®/¸Ó¸®»ö )
+
+	int				maxLp;
+	int				curLp;
+
+	WORD			wMaxEP;
+	WORD			wCurEP;
+
+	DWORD			maxAP;
+	DWORD			curAP;
+
+	BYTE			byLevel;
+	float			fBaseRunSpeed;
+	float			fLastRunSpeed;
+
+	float			fBaseAirSpeed;
+	float			fLastFlySpeed;
+
+	float			fBaseAirDashSpeed;
+	float			fLastFlyDashSpeed;
+
+	float			fBaseAirDash2Speed;
+	float			fLastFlyAccelSpeed;
+
+	sITEM_BRIEF		sItemBrief[17]; // ÀåÂø ¾ÆÀÌÅÛ Á¤º¸
+
+	WORD			wAttackSpeedRate;
+	float			fSkillAnimationSpeedModifier;
+
+	sDBO_GUILD_MARK	sMark;
+
+	DWORD			charTitle;
+
+	sDBO_DOGI_DATA	sDogi;
+	BYTE			WorkshopAligment;
+	bool			bEmergency;
+	bool			bIsInFreePvpZone;
+	bool			bIsScrambleJoinFlag;
+	BYTE			byHasBattleDragonBallBitFlag;
+	DWORD			mascotTblidx;
+	BYTE			bySizeRate;
+DWORD			partyId;
+	bool			bInvisibleCostume;
+	/*BYTE			bleeding;
+	BYTE			poison;
+	BYTE			stomachace;
+	BYTE			burn;
+	BYTE			confuse;*/
+	/*PARTYID			partyId;
+	bool			bInvisibleCostume;
+	bool			bInvisibleTitle;*/
+}sPC_BRIEF;
+
+struct sBOT_BRIEF
+{
+	DWORD			tblidx;
+
+	int				curLp;
+	WORD			wCurEP;
+	int				maxLp;
+	WORD			wMaxEP;
+
+	float			fLastWalkingSpeed;
+	float			fLastRunningSpeed;
+	float			fLastFlyingSpeed;
+	float			fLastFlyingDashSpeed;
+	float			fLastFlyingAccelSpeed;
+	WORD			wAttackSpeedRate;
+
+	float			fSkillAnimationSpeedModifier;
+
+	DWORD actionpatternTblIdx; //Combat table in behavior pattern set ID
+
+	DWORD nicknameTblidx;
+	BYTE bySizeRate;
+}sBOT_BRIEF;
+
+struct sNPC_BRIEF
+{
+sBOT_BRIEF botData;
+	bool			bIsEnemyPc;
+}sNPC_BRIEF;
+
+struct PC
+{
+	sPC_BRIEF		pcBrief;
+	sCHARSTATE		pcState;
+}PC;
+struct NPC// npc
+{
+	sNPC_BRIEF		npcBrief;
+	sCHARSTATE		npcState;
+}NPC;
+
+struct sMOB_BRIEF
+{
+sBOT_BRIEF botBrief;
+	BYTE		byActualLevel;
+	BYTE		byBallType; // Whether the mob is not created at the pleasure gulsu Dragon Ball if NtlItem.h cf) eDRAGON_BALL_TYPE
+}sMOB_BRIEF;
+
+struct MOB // mob
+{
+	sMOB_BRIEF		mobBrief;
+	sCHARSTATE		mobState;
+}MOB;
+union Objects
+{
+PC pc;
+NPC npc;
+MOB mob;	
+	/*struct // summon pet
+	{
+		sSUMMON_PET_BRIEF		summonPetBrief;
+		sCHARSTATE				summonPetState;
+	};
+	struct // item pet
+	{
+		sITEM_PET_BRIEF			itemPetBrief;
+		sCHARSTATE				itemPetState;
+	};
+	struct // item
+	{
+		sITEM_BRIEF			itemBrief;
+		sITEM_STATE			itemState;
+		sITEM_OPTION_SET	itemOptionSet;
+	};
+	struct // money
+	{
+		sMONEY_BRIEF	moneyBrief;
+		sMONEY_STATE	moneyState;
+	};
+	struct // trigger object
+	{
+		sTOBJECT_BRIEF	tobjectBrief;
+		sTOBJECT_STATE	tobjectState;
+	};
+	struct // dynamic object
+	{
+		sDYNAMIC_OBJECT_BRIEF	dynamicObjBrief;
+		sDYNAMIC_OBJECT_STATE	dynamicObjState;
+	};*/
+}Objects;
+struct sOBJECT_INFO
+{
+	BYTE					objType;
+
+	Objects objects;
+}sOBJECT_INFO;
+
+struct GU_OBJECT_CREATE
+{
+WORD size;
+WORD opcode;
+	DWORD			handle;
+	sOBJECT_INFO	sObjectInfo;
+};
