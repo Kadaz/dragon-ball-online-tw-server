@@ -1,0 +1,39 @@
+/*****************************************************************************
+ * bookmarks.hsl - Hex Workshop Bookmark structure definitions
+ *
+ * Copyright (c) 2008 BreakPoint Software, Inc.  All Rights Reserved.
+ *
+ *****************************************************************************
+ *
+ * The Hex Workshop Bookmark format is fairly simple.  It starts with a 
+ * fixed-length header (struct tagHEADER) and is followed by fixed length
+ * bookmark entries (struct tagENTRY).  Please see the structure definitions
+ * below for details.
+ *
+ */
+
+#include "standard-types.hsl"
+struct sQUEST_NARRATION_DATASET
+{
+	BYTE			byUIShowHideDirection;
+	BYTE			byOwnerType;
+BYTE fill[2];
+	DWORD			dwOwner;
+	BYTE			byCondition;
+	BYTE			byDirection;
+BYTE fill[2];
+	DWORD			dwDialog;
+	BYTE			byUiType;
+	BYTE			byUIDirection;
+BYTE fill[2];
+}sQUEST_NARRATION_DATASET;
+
+struct sQUEST_NARRATION_TBLDAT
+{
+DWORD tblidx;
+	bool			bType;		// false : Narration, true : Mini narration
+	BYTE			byNumber;	
+	BYTE			byTime;
+BYTE fill[1];
+	sQUEST_NARRATION_DATASET asData[20];
+} ;

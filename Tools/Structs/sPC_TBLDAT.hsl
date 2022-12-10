@@ -1,0 +1,96 @@
+/*****************************************************************************
+ * filesystems.hsl - Structure definitions for file system related entities.
+ *     This presently includes the MBR, and BOOTSECTORs for FAT16, FAT32, and
+ *     NTFS.
+ *  
+ * Copyright (c) 2003-2008 BreakPoint Software, Inc.  All Rights Reserved
+ *
+ *****************************************************************************
+ * Revision History:
+ *  05/01/03 - RJA - Original
+ *  10/16/07 - RJA - Formatting tweaks, use blob for ByteCode
+ *  12/16/09 - RJA - Added enumsign pragmas
+ */
+
+#include "standard-types.hsl"
+
+
+// PC
+struct sPC_TBLDAT
+{
+DWORD tblidx;
+	int				dwBasic_LP;
+	WORD			wBasic_EP;
+	WORD			wBasic_Physical_Defence;
+	WORD			wBasic_Energy_Defence;
+
+	WORD			wBasicStr;
+	WORD			wBasicCon;
+	WORD			wBasicFoc;
+	WORD			wBasicDex;
+	WORD			wBasicSol;
+	WORD			wBasicEng;
+
+BYTE fill[2];
+
+	float			fScale;
+	WORD			wAttack_Speed_Rate; // ¸Ç¼Õ °ø°Ý½ÃÀÇ ¾Ö´Ï¸ÞÀÌ¼Ç ¼Óµµ¿¡ ´ëÇÑ %
+	BYTE			byAttack_Type;
+BYTE fill[1];
+	float			fAttack_Range;
+	WORD			wAttack_Rate;
+	WORD			wDodge_Rate;
+	WORD			wBlock_Rate;
+	WORD			wCurse_Success_Rate;
+	WORD			wCurse_Tolerance_Rate;
+BYTE fill[2];
+	float			fRadius;
+	WORD			wBasic_Aggro_Point;
+BYTE fill[2];
+	BYTE			byRace;
+	BYTE			byGender;
+	BYTE			byClass;
+BYTE fill[1];
+	DWORD			prior_Class_Tblidx;
+	DWORD			dwClass_Bit_Flag;
+	char			szModel_Child[ 32 + 1 ];
+	char			szModel_Adult[ 32 + 1 ];
+BYTE fill[2];
+	float			fChild_Run_Speed_Origin;
+	float			fChild_Run_Speed;
+	float			fAdult_Run_Speed_Origin;
+	float			fAdult_Run_Speed;
+	float			fChild_Fly_Speed_Origin;
+	float			fChild_Fly_Speed;
+	float			fAdult_Fly_Speed_Origin;
+	float			fAdult_Fly_Speed;
+	float			fChild_Dash_Speed_Origin;
+	float			fChild_Dash_Speed;
+	float			fAdult_Dash_Speed_Origin;
+	float			fAdult_Dash_Speed;
+	float			fChild_Accel_Speed_Origin;
+	float			fChild_Accel_Speed;
+	float			fAdult_Accel_Speed_Origin;
+	float			fAdult_Accel_Speed;
+
+	WORD			wBasic_RP;
+	WORD			wBasic_Physical_Offence;
+	WORD			wBasic_Energy_Offence;
+BYTE fill[2];
+	DWORD			dwWeightLimit;
+
+	BYTE			byLevel_Up_LP;
+	BYTE			byLevel_Up_EP;
+	BYTE			byLevel_Up_RP;
+	BYTE			byLevel_Up_Physical_Offence;
+	BYTE			byLevel_Up_Physical_Defence;
+	BYTE			byLevel_Up_Energy_Offence;
+	BYTE			byLevel_Up_Energy_Defence;
+BYTE fill[1];
+	float			fLevel_Up_Str;
+	float			fLevel_Up_Con;
+	float			fLevel_Up_Foc;
+	float			fLevel_Up_Dex;
+	float			fLevel_Up_Sol;
+	float			fLevel_Up_Eng;
+};

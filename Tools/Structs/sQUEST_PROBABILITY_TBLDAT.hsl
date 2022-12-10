@@ -1,0 +1,52 @@
+/*****************************************************************************
+ * filesystems.hsl - Structure definitions for file system related entities.
+ *     This presently includes the MBR, and BOOTSECTORs for FAT16, FAT32, and
+ *     NTFS.
+ *  
+ * Copyright (c) 2003-2008 BreakPoint Software, Inc.  All Rights Reserved
+ *
+ *****************************************************************************
+ * Revision History:
+ *  05/01/03 - RJA - Original
+ *  10/16/07 - RJA - Formatting tweaks, use blob for ByteCode
+ *  12/16/09 - RJA - Added enumsign pragmas
+ */
+
+#include "standard-types.hsl"
+enum ePROBABILITY_USE_TYPE
+{
+  PROBABILITY_USE_TYPE_TS = 0,
+  PROBABILITY_USE_TYPE_TS_DROP,
+  PROBABILITY_USE_TYPE_TMQ_DAYRECORD,
+  PROBABILITY_USE_TYPE_GAMBLE_SHOP,
+  PROBABILITY_USE_TYPE_GAMBLE_ITEM,
+  PROBABILITY_USE_TYPE_SUB_REWARD,
+
+  PROBABILITY_USE_TYPE_COUNT,
+  INVALID_PROBABILITY_USE_TYPE = 0xFF,
+}ePROBABILITY_USE_TYPE;
+
+struct sQUEST_PROBABILITY_DATA
+{
+	BYTE	byType;			// eREWARD_TYPE
+BYTE unknown[3];
+	DWORD	tblidx;			// Å×ÀÌºí ÀÎµ¦½º INVALID_
+	DWORD	dwMinValue;		// ÃÖ¼Ò °ª
+	DWORD	dwMaxValue;		// ÃÖ´ë °ª
+	DWORD	dwRate;
+}sQUEST_PROBABILITY_DATA;
+
+struct sQUEST_PROBABILITY_TBLDAT
+{
+DWORD tblidx;
+	WCHAR					wszName[64 + 1];
+	WCHAR					wszNote[255 + 1];
+BYTE fill[2];
+	ePROBABILITY_USE_TYPE	eUseType; //new
+	BYTE					byProbabilityType;	// ePROBABILITY_TYPE
+
+	bool					bAllowBlank; //new
+	BYTE					byCount; //new
+BYTE fill[1];
+	sQUEST_PROBABILITY_DATA	asProbabilityData[50];
+};
