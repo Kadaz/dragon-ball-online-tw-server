@@ -1,0 +1,30 @@
+/*****************************************************************************
+ * filesystems.hsl - Structure definitions for file system related entities.
+ *     This presently includes the MBR, and BOOTSECTORs for FAT16, FAT32, and
+ *     NTFS.
+ *  
+ * Copyright (c) 2003-2008 BreakPoint Software, Inc.  All Rights Reserved
+ *
+ *****************************************************************************
+ * Revision History:
+ *  05/01/03 - RJA - Original
+ *  10/16/07 - RJA - Formatting tweaks, use blob for ByteCode
+ *  12/16/09 - RJA - Added enumsign pragmas
+ */
+
+#include "standard-types.hsl"
+
+struct sACTION_TBLDAT
+{
+DWORD tblidx;
+	bool			bValidity_Able;
+	BYTE			byAction_Type;
+BYTE fill[2];
+	DWORD			Action_Name;
+	char			szIcon_Name[ 32 + 1 ];
+BYTE fill[3];
+	DWORD			Note;
+	DWORD			chat_Command_Index;
+	BYTE			byETC_Action_Type;
+BYTE fill[3];
+};
